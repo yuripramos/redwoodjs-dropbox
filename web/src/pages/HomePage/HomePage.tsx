@@ -1,28 +1,22 @@
-import { Link, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
+
+import LayoutWrapper from 'src/layouts/LayoutWrapper'
+
+import DragAndDropFile from '../../components/DragAndDropFile'
 
 const HomePage = () => {
   return (
-    <>
-      <MetaTags title="Home" description="Home page" />
-
-      <h1 className="text-center text-4xl font-bold text-indigo-700">
-        Drop your files like dropbox! 📦
-      </h1>
-      <p className="mt-4 text-center text-gray-600">
-        Find me in <code>./web/src/pages/HomePage/HomePage.tsx</code>
-      </p>
-      <p className="mt-4 text-center text-gray-600">
-        My default route is named <code>home</code>, link to me with `
-        <Link
-          to={routes.home()}
-          className="text-indigo-500 underline hover:text-indigo-700"
-        >
-          Home
-        </Link>
-        `
-      </p>
-    </>
+    <LayoutWrapper>
+      <div className="py-4 text-center">
+        <h2 className="mt-6 text-center text-xl text-gray-100">
+          Just drop your file below and we&quot;ll take care of the rest 📦
+        </h2>
+      </div>
+      <div className="flex h-screen flex-col justify-center">
+        <MetaTags title="Home" description="Home page" />
+        <DragAndDropFile />
+      </div>
+    </LayoutWrapper>
   )
 }
 

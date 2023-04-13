@@ -5,9 +5,28 @@
  * to inject Tailwind's styles into your CSS.
  * For more information, see: https://tailwindcss.com/docs/installation#include-tailwind-in-your-css
  */
+
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 /**
  * END --- SETUP TAILWINDCSS EDIT
  */
+
+
+ body {
+   background: #F4b253;
+   background-image: url('./assets/background_1.png');
+    background-size:25%;
+    background-position:right bottom;
+    background-repeat: no-repeat;
+  }
+
+.dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: black;
+  margin-right: 2px;
+}
