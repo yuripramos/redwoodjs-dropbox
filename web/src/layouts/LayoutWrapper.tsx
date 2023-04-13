@@ -4,7 +4,7 @@ import Header from 'src/components/Header'
 
 const LayoutWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex h-screen flex-col items-center">
+    <div className="flex h-screen flex-col items-center m-12">
       <Header />
       {children}
       <footer>My FooterMy FooterMy FooterMy FooterMy FooterMy Footer</footer>
