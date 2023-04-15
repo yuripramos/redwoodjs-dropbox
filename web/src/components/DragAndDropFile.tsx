@@ -1,26 +1,51 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
-import { useDropzone } from 'react-dropzone'
+import { PickerInline } from 'filestack-react'
 
-interface FileObject {
-  name: string
-  lastModified: number
-}
+import { useMutation, useQuery } from '@redwoodjs/web'
+import { toast } from '@redwoodjs/web/toast'
 
-const DragAndDropUpload = (): JSX.Element => {
-  const [files, setFiles] = useState<FileObject[]>([])
+import { QUERY } from 'src/components/File/FilesCell'
 
-  const onDrop = (acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map((file) => {
+import { FileType, NewFile, ExistingFilesData } from './File/Types'
+
+const CREATE_FILE_MUTATION = gql`
+  mutation CreateFileMutation($input: CreateFileInput!) {
+    createFile(input: $input) {
+      id
+    }
+  }
+`
+
+const DragAndDropUpload = () => {
+  const [files, setFiles] = useState<NewFile[]>([])
+  const { data: existingFilesData } = useQuery<ExistingFilesData>(QUERY)
+  const [createFile, { loading, error }] = useMutation(CREATE_FILE_MUTATION, {
+    onCompleted: () => {
+      toast.success('File created')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    refetchQueries: [{ query: QUERY }],
+    awaitRefetchQueries: true,
+  })
+
+  const onDrop = async (response) => {
+    const { filesUploaded } = response
+
+    const newFiles = filesUploaded.map((file: FileType) => {
       return {
-        name: file.name,
-        lastModified: file.lastModified,
+        name: file.filename,
+        path: file.url,
+        size: file.size,
+        type: file.mimetype,
       }
     })
 
     setFiles((prevState) => {
-      // Check if file already exists
-      const existingFiles = prevState.map((f) => f.name)
+      // Check if file already exists - no-op
+      const existingFiles = existingFilesData.files.map((f) => f.name)
       const filteredNewFiles = newFiles.filter(
         (file) => !existingFiles.includes(file.name)
       )
@@ -29,106 +54,68 @@ const DragAndDropUpload = (): JSX.Element => {
     })
   }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
-
-  return (
-    <div className="flex h-screen flex-col items-center">
-      <div
-        {...getRootProps()}
-        className="mb-6 cursor-pointer rounded-lg border-2 border-dashed border-black px-6 py-12"
-      >
-        <div className="icons text-center text-3xl ">
-          <i className="fas fa-file-image -rotate-45 scale-75 transform"></i>
-          <i className="fas fa-file-alt translate-y-2 scale-90 transform"></i>
-          <i className="fas fa-file-pdf rotate-45 scale-75 transform"></i>
-        </div>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p className="text-2xl font-bold">Drop the files here ...</p>
-        ) : (
-          <p className="text-2xl font-bold ">
-            Drag and drop your files here, or click to select files
-          </p>
-        )}
-      </div>
-      {files.length > 0 && (
-        <table
-          className="text-black-200 mt-20 w-full table-fixed overflow-hidden rounded-md border border-b"
-          style={{ background: `rgb(196 125 14 / 39%)` }}
-        >
-          <thead>
-            <tr className="border-gray-30 border-b">
-              <th className="w-1/2 px-4 py-2 text-left font-medium uppercase tracking-wider ">
-                Name
-              </th>
-              <th className="w-1/4 px-4 py-2 text-left font-medium uppercase tracking-wider">
-                Modified
-              </th>
-              <th className="w-1/4 px-4 py-2 text-center font-medium uppercase tracking-wider ">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {files.map((file, index) => (
-              <TableRow key={file.name} file={file} index={index} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  )
-}
-
-export function TableRow(props) {
-  const [showTooltip, setShowTooltip] = useState(false)
-  const tooltipRef = useRef(null)
-
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
-        setShowTooltip(false)
+    const createFiles = async () => {
+      try {
+        // create a new file record for each file in the database
+        await Promise.all(
+          files.map((file) =>
+            createFile({
+              variables: {
+                input: {
+                  name: file.name,
+                  path: file.path,
+                  size: file.size,
+                  type: file.type,
+                },
+              },
+            })
+          )
+        )
+
+        setFiles([])
+      } catch (error) {
+        console.error(error)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+
+    if (files.length > 0) {
+      createFiles()
     }
-  }, [tooltipRef])
+  }, [files, createFile])
+
+  const OnFileSelected = async (
+    existingFilesData: ExistingFilesData,
+    file: FileType
+  ) => {
+    const hasSameName = existingFilesData.files.some(
+      (fileData) => fileData.name === file.filename
+    )
+
+    if (hasSameName) {
+      throw new Error('same name in the database, try a different name')
+    }
+  }
 
   return (
-    <tr
-      className={`${
-        props.index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
-      } border-b border-gray-300 transition-opacity duration-200 hover:bg-gray-200`}
-    >
-      <td className="px-4 py-2 text-gray-700">{props.file.name}</td>
-      <td className="px-4 py-2 text-gray-700">
-        {new Date(props.file.lastModified).toLocaleDateString()}
-      </td>
-      <td className="px-4 py-2 text-center">
-        <button
-          className="hover:text-indigo-600"
-          onClick={() => setShowTooltip(!showTooltip)}
-        >
-          <span className="sr-only">Actions</span>
-          <span className="h-20 w-20">...</span>
-        </button>
-        {showTooltip && (
-          <div
-            ref={tooltipRef}
-            className="absolute right-1 z-10 mt-2 w-26 rounded-md border border-gray-300 bg-white py-2 shadow-lg"
-          >
-            <button className="block w-full px-4 py-2 text-left hover:bg-gray-100 hover:text-gray-900">
-              Remove
-            </button>
-            <button className="block w-full px-4 py-2 text-left hover:bg-gray-100 hover:text-gray-900">
-              Update Name
-            </button>
+    <>
+      <PickerInline
+        apikey={process.env.REDWOOD_ENV_FILESTACK_API_KEY}
+        pickerOptions={{
+          onFileSelected: (file) => OnFileSelected(existingFilesData, file),
+        }}
+        onSuccess={onDrop}
+      />
+      {loading && (
+        <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
+          <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
+          <div className="ml-4 font-bold text-white">
+            Creating new item in the database...
           </div>
-        )}
-      </td>
-    </tr>
+        </div>
+      )}
+      {error && <div>Error! Please try again</div>}
+    </>
   )
 }
 

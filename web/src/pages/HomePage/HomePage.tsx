@@ -1,5 +1,6 @@
 import { MetaTags } from '@redwoodjs/web'
 
+import FilesCell from 'src/components/File/FilesCell'
 import LayoutWrapper from 'src/layouts/LayoutWrapper'
 
 import DragAndDropFile from '../../components/DragAndDropFile'
@@ -15,6 +16,8 @@ const HomePage = () => {
       <div className="flex h-screen flex-col justify-center">
         <MetaTags title="Home" description="Home page" />
         <DragAndDropFile />
+        <h3 className="my-3 text-2xl font-bold">Files uploaded</h3>
+        <FilesCell />
       </div>
     </LayoutWrapper>
   )
