@@ -1,14 +1,54 @@
-import { render } from '@redwoodjs/testing/web'
+import {
+  render,
+  screen,
+  mockGraphQLQuery,
+  waitFor,
+} from '@redwoodjs/testing/web'
 
 import HomePage from './HomePage'
 
-//   Improve this test with help from the Redwood Testing Doc:
-//   https://redwoodjs.com/docs/testing#testing-pages-layouts
-
 describe('HomePage', () => {
-  it('renders successfully', () => {
-    expect(() => {
-      render(<HomePage />)
-    }).not.toThrow()
+  beforeEach(() => {
+    mockGraphQLQuery('FindFiles', () => {
+      return {
+        files: [
+          {
+            id: 1,
+            name: 'test-file-1.txt',
+            path: 'https://example.com/test-file-1.txt',
+            size: 1024,
+            type: 'text/plain',
+            createdAt: '2023-04-13T00:00:00.000Z',
+          },
+          {
+            id: 2,
+            name: 'new-file-2.txt',
+            path: 'https://example.com/test-file-2.txt',
+            size: 1048,
+            type: 'text/plain',
+            createdAt: '2023-04-14T00:00:00.000Z',
+          },
+        ],
+      }
+    })
+  })
+
+  it('renders the HomePage component successfully', async () => {
+    render(<HomePage />)
+
+    expect(
+      screen.getByRole('heading', { name: /just drop your file below/i })
+    ).toBeInTheDocument()
+
+    expect(screen.getByTestId('drag-and-drop-file')).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('heading', { name: /files uploaded/i })
+    ).toBeInTheDocument()
+
+    // Use waitFor to wait for the FilesCell component to be present after the GraphQL query resolves
+    await waitFor(() => {
+      expect(screen.getByTestId('files-cell')).toBeInTheDocument()
+    })
   })
 })

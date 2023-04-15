@@ -1,11 +1,11 @@
+import type { DeleteFileMutationVariables, FindFiles } from 'types/graphql'
+
 import { Link, routes } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/File/FilesCell'
 import { timeTag, truncate } from 'src/lib/formatters'
-
-import type { DeleteFileMutationVariables, FindFiles } from 'types/graphql'
 
 const DELETE_FILE_MUTATION = gql`
   mutation DeleteFileMutation($id: Int!) {
@@ -37,7 +37,10 @@ const FilesList = ({ files }: FindFiles) => {
   }
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
+    <div
+      className="rw-segment rw-table-wrapper-responsive"
+      data-testid="files-cell"
+    >
       <table className="rw-table">
         <thead>
           <tr>

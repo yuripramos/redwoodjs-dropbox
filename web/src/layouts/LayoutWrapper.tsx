@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
-import Footer from 'src/components/Footer'
-import Header from 'src/components/Header'
+import Footer from 'src/components/Footer/Footer'
+import Header from 'src/components/Header/Header'
 
 const LayoutWrapper = ({ children }: { children: ReactNode }) => {
   return (

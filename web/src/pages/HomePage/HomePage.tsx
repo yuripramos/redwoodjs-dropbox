@@ -3,7 +3,7 @@ import { MetaTags } from '@redwoodjs/web'
 import FilesCell from 'src/components/File/FilesCell'
 import LayoutWrapper from 'src/layouts/LayoutWrapper'
 
-import DragAndDropFile from '../../components/DragAndDropFile'
+import DragAndDropFile from '../../components/DragAndDrop/DragAndDropFile'
 
 const HomePage = () => {
   return (
@@ -13,11 +13,11 @@ const HomePage = () => {
           Just drop your file below and we&quot;ll take care of the rest 📦
         </h2>
       </div>
-      <div className="flex h-screen flex-col justify-center">
+      <div className="flex h-screen flex-col">
         <MetaTags title="Home" description="Home page" />
-        <DragAndDropFile />
+        <DragAndDropFile data-testid="drag-and-drop-file" />
         <h3 className="my-3 text-2xl font-bold">Files uploaded</h3>
-        <FilesCell />
+        <FilesCell data-testid="files-cell" />
       </div>
     </LayoutWrapper>
   )

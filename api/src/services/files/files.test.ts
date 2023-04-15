@@ -1,13 +1,8 @@
 import type { File } from '@prisma/client'
+import * as Filestack from 'filestack-js'
 
 import { files, file, createFile, updateFile, deleteFile } from './files'
 import type { StandardScenario } from './files.scenarios'
-
-// Generated boilerplate tests do not account for all circumstances
-// and can fail without adjustments, e.g. Float.
-//           Please refer to the RedwoodJS Testing Docs:
-//       https://redwoodjs.com/docs/testing#testing-services
-// https://redwoodjs.com/docs/testing#jest-expect-type-considerations
 
 describe('files', () => {
   scenario('returns all files', async (scenario: StandardScenario) => {
@@ -44,9 +39,20 @@ describe('files', () => {
   })
 
   scenario('deletes a file', async (scenario: StandardScenario) => {
-    const original = (await deleteFile({ id: scenario.file.one.id })) as File
-    const result = await file({ id: original.id })
+    const original = await file({ id: scenario.file.one.id })
+    expect(original).not.toEqual(null)
 
-    expect(result).toEqual(null)
+    // Mock Filestack initialization
+    jest.spyOn(Filestack, 'init').mockReturnValue({ remove: () => {} } as any)
+
+    // Mock Filestack.getSecurity
+    jest
+      .spyOn(Filestack, 'getSecurity')
+      .mockReturnValue({ policy: 'mockPolicy', signature: 'mockSignature' })
+
+    await deleteFile({ id: original.id }) // Delete the file
+    const result = await file({ id: original.id }) // Try to fetch the deleted file
+
+    expect(result).toEqual(null) // Expect the deleted file to be null
   })
 })
