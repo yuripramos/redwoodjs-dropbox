@@ -13,7 +13,7 @@ const HomePage = () => {
           Just drop your file below and we&quot;ll take care of the rest 📦
         </h2>
       </div>
-      <div className="flex h-screen flex-col">
+      <div className="flex h-screen min-w-full flex-col">
         <MetaTags title="Home" description="Home page" />
         <DragAndDropFile data-testid="drag-and-drop-file" />
         <h3 className="my-3 text-2xl font-bold">Files uploaded</h3>

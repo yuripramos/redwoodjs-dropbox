@@ -48,10 +48,7 @@ const DragAndDropUpload = () => {
   }
 
   return (
-    <div
-      data-testid="drag-and-drop-file"
-      className="mx-auto w-full md:w-3/4 sm:2/2 lg:w-1/2"
-    >
+    <div data-testid="drag-and-drop-file" className="lg:min-w-[900px]">
       <PickerInline
         apikey={process.env.REDWOOD_ENV_FILESTACK_API_KEY}
         pickerOptions={{
