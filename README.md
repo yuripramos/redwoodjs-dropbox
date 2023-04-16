@@ -1,6 +1,7 @@
 # Redwood-Dropbox
 
-Welcome to Redwood-Dropbox! We ❤️ [RedwoodJS](https://redwoodjs.com)
+Welcome to Redwood-Dropbox!</br>
+We ❤️ [RedwoodJS](https://redwoodjs.com)
 
 ![Diagram](diagram.png)
 ## Live Demo
@@ -31,4 +32,5 @@ Your browser should automatically open to http://localhost:8910 where you'll see
 
 Redwood uses [Prisma](https://www.prisma.io/), a next-gen Node.js and TypeScript ORM, to talk to the database.
 
-Note: *Temporarily*, I am using my own credentials for the live demo as a proof of concept. However, if you plan on developing this project locally, you must update the values for DATABASE_URL, REDWOOD_ENV_FILESTACK_API_KEY, REDWOOD_ENV_FILESTACK_SECRET, and TEST_DATABASE_URL in the .env file located in the root directory of the repository.
+>Note:
+ *Temporarily*, I am using my own credentials for the live demo as proof of concept. However, if you plan on developing this project locally, you must update the values for DATABASE_URL, REDWOOD_ENV_FILESTACK_API_KEY, REDWOOD_ENV_FILESTACK_SECRET, and TEST_DATABASE_URL in the .env file that should be located in the root directory of the repository
