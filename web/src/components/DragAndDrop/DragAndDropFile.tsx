@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react'
-
 import { PickerInline } from 'filestack-react'
 
 import { useMutation, useQuery } from '@redwoodjs/web'
